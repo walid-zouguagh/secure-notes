@@ -1,0 +1,106 @@
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import '../models/note.dart';
+import '../services/database_service.dart';
+
+class EditNoteScreen extends StatefulWidget {
+  final Note note; // Receive the existing note
+
+  const EditNoteScreen({super.key, required this.note});
+
+  @override
+  State<EditNoteScreen> createState() => _EditNoteScreenState();
+}
+
+class _EditNoteScreenState extends State<EditNoteScreen> {
+  final _formKey = GlobalKey<FormState>();
+  late TextEditingController _titleController;
+  late TextEditingController _descriptionController;
+  late DateTime _selectedDate;
+
+  @override
+  void initState() {
+    super.initState();
+    // Pre-fill the controllers with existing data
+    _titleController = TextEditingController(text: widget.note.title);
+    _descriptionController = TextEditingController(text: widget.note.description);
+    _selectedDate = DateFormat('yyyy-MM-dd').parse(widget.note.date);
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null && picked != _selectedDate) {
+      setState(() {
+        _selectedDate = picked;
+      });
+    }
+  }
+
+  void _updateNote() async {
+    if (_formKey.currentState!.validate()) {
+      final updatedNote = Note(
+        id: widget.note.id, // Important: Keep the same ID so SQLite knows which one to update
+        title: _titleController.text,
+        description: _descriptionController.text,
+        date: DateFormat('yyyy-MM-dd').format(_selectedDate),
+      );
+
+      await DatabaseService.instance.updateNote(updatedNote);
+      if (mounted) Navigator.pop(context, true);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Edit Note"),
+        backgroundColor: Colors.deepPurple,
+        foregroundColor: Colors.white,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              TextFormField(
+                controller: _titleController,
+                decoration: const InputDecoration(labelText: "Title", border: OutlineInputBorder()),
+                validator: (value) => value!.isEmpty ? "Please enter a title" : null,
+              ),
+              const SizedBox(height: 15),
+              TextFormField(
+                controller: _descriptionController,
+                decoration: const InputDecoration(labelText: "Description", border: OutlineInputBorder()),
+                maxLines: 3,
+                validator: (value) => value!.isEmpty ? "Please enter a description" : null,
+              ),
+              const SizedBox(height: 15),
+              ListTile(
+                title: Text("Date: ${DateFormat('yyyy-MM-dd').format(_selectedDate)}"),
+                trailing: const Icon(Icons.calendar_today),
+                onTap: () => _selectDate(context),
+                tileColor: Colors.grey[200],
+              ),
+              const Spacer(),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.blue, foregroundColor: Colors.white),
+                  onPressed: _updateNote,
+                  child: const Text("UPDATE CHANGES"),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
