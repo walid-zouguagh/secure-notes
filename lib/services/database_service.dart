@@ -26,8 +26,9 @@ class DatabaseService {
 
     return await openDatabase(
       path,
-      version: 1,
+      version: 2, // Incremented version to 2 for migration
       onCreate: _createDB,
+      onUpgrade: _onUpgrade,
     );
   }
 
@@ -38,24 +39,37 @@ class DatabaseService {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT NOT NULL,
         description TEXT NOT NULL,
-        date TEXT NOT NULL
+        date TEXT NOT NULL,
+        orderIndex INTEGER NOT NULL DEFAULT 0
       )
     ''');
   }
 
+  // Migration logic for upgrading the database
+  Future _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      await db.execute('ALTER TABLE notes ADD COLUMN orderIndex INTEGER NOT NULL DEFAULT 0');
+    }
+  }
+
   // --- CRUD METHODS ---
 
-  // 1. Retrieve all notes
+  // 1. Retrieve all notes sorted by orderIndex
   Future<List<Note>> getAllNotes() async {
     final db = await instance.database;
-    final result = await db.query('notes', orderBy: 'id DESC');
+    final result = await db.query('notes', orderBy: 'orderIndex ASC, id DESC');
     return result.map((json) => Note.fromMap(json)).toList();
   }
 
   // 2. Insert a new note
   Future<int> addNote(Note note) async {
     final db = await instance.database;
-    return await db.insert('notes', note.toMap());
+    // Set orderIndex to the count of notes to place it at the end
+    final countResult = await db.rawQuery('SELECT COUNT(*) FROM notes');
+    final count = Sqflite.firstIntValue(countResult) ?? 0;
+    
+    final updatedNote = note.copyWith(orderIndex: count);
+    return await db.insert('notes', updatedNote.toMap());
   }
 
   // 3. Update an existing note
@@ -69,7 +83,22 @@ class DatabaseService {
     );
   }
 
-  // 4. Delete a specific note
+  // 4. Batch update note order
+  Future<void> updateAllNotes(List<Note> notes) async {
+    final db = await instance.database;
+    await db.transaction((txn) async {
+      for (int i = 0; i < notes.length; i++) {
+        await txn.update(
+          'notes',
+          {'orderIndex': i},
+          where: 'id = ?',
+          whereArgs: [notes[i].id],
+        );
+      }
+    });
+  }
+
+  // 5. Delete a specific note
   Future<int> deleteNote(int id) async {
     final db = await instance.database;
     return await db.delete(
@@ -79,7 +108,7 @@ class DatabaseService {
     );
   }
 
-  // 5. Clear all notes
+  // 6. Clear all notes
   Future<void> deleteAllNotes() async {
     final db = await instance.database;
     await db.delete('notes');

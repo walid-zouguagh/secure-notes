@@ -51,4 +51,3 @@ lib/
     or
     TMPDIR=~/flutter_tmp flutter run 
     ```
-

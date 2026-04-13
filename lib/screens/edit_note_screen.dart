@@ -49,6 +49,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
         title: _titleController.text,
         description: _descriptionController.text,
         date: DateFormat('yyyy-MM-dd').format(_selectedDate),
+        orderIndex: widget.note.orderIndex, // Preserve the existing order
       );
 
       await DatabaseService.instance.updateNote(updatedNote);
@@ -67,40 +68,49 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                controller: _titleController,
-                decoration: InputDecoration(labelText: l10n.title, border: const OutlineInputBorder()),
-                validator: (value) => value!.isEmpty ? l10n.enterTitle : null,
-              ),
-              const SizedBox(height: 15),
-              TextFormField(
-                controller: _descriptionController,
-                decoration: InputDecoration(labelText: l10n.description, border: const OutlineInputBorder()),
-                maxLines: 3,
-                validator: (value) => value!.isEmpty ? l10n.enterDescription : null,
-              ),
-              const SizedBox(height: 15),
-              ListTile(
-                title: Text("${l10n.date}: ${DateFormat('yyyy-MM-dd').format(_selectedDate)}"),
-                trailing: const Icon(Icons.calendar_today),
-                onTap: () => _selectDate(context),
-                tileColor: Colors.grey[200],
-              ),
-              const Spacer(),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.blue, foregroundColor: Colors.white),
-                  onPressed: _updateNote,
-                  child: Text(l10n.updateChanges),
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        controller: _titleController,
+                        decoration: InputDecoration(labelText: l10n.title, border: const OutlineInputBorder()),
+                        validator: (value) => value!.isEmpty ? l10n.enterTitle : null,
+                      ),
+                      const SizedBox(height: 15),
+                      TextFormField(
+                        controller: _descriptionController,
+                        decoration: InputDecoration(labelText: l10n.description, border: const OutlineInputBorder()),
+                        maxLines: 3,
+                        validator: (value) => value!.isEmpty ? l10n.enterDescription : null,
+                      ),
+                      const SizedBox(height: 15),
+                      ListTile(
+                        title: Text("${l10n.date}: ${DateFormat('yyyy-MM-dd').format(_selectedDate)}"),
+                        trailing: const Icon(Icons.calendar_today),
+                        onTap: () => _selectDate(context),
+                        tileColor: Colors.grey[200],
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.blue, foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(vertical: 15)),
+                onPressed: _updateNote,
+                child: Text(l10n.updateChanges),
+              ),
+            ),
+            const SizedBox(height: 25), // Moves button above bottom bar
+          ],
         ),
       ),
     );

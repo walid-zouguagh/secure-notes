@@ -38,6 +38,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
         title: _titleController.text,
         description: _descriptionController.text,
         date: DateFormat('yyyy-MM-dd').format(_selectedDate),
+        orderIndex: 0, // This will be correctly set by DatabaseService.addNote
       );
 
       await DatabaseService.instance.addNote(newNote);
@@ -56,51 +57,60 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                controller: _titleController,
-                decoration: InputDecoration(
-                  labelText: l10n.title,
-                  border: const OutlineInputBorder(),
-                ),
-                validator: (value) => value!.isEmpty ? l10n.enterTitle : null,
-              ),
-              const SizedBox(height: 15),
-              TextFormField(
-                controller: _descriptionController,
-                decoration: InputDecoration(
-                  labelText: l10n.description,
-                  border: const OutlineInputBorder(),
-                ),
-                maxLines: 3,
-                validator: (value) => value!.isEmpty ? l10n.enterDescription : null,
-              ),
-              const SizedBox(height: 15),
-              ListTile(
-                title: Text("${l10n.date}: ${DateFormat('yyyy-MM-dd').format(_selectedDate)}"),
-                trailing: const Icon(Icons.calendar_today),
-                onTap: () => _selectDate(context),
-                tileColor: Colors.grey[200],
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-              ),
-              const Spacer(),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 15),
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        controller: _titleController,
+                        decoration: InputDecoration(
+                          labelText: l10n.title,
+                          border: const OutlineInputBorder(),
+                        ),
+                        validator: (value) => value!.isEmpty ? l10n.enterTitle : null,
+                      ),
+                      const SizedBox(height: 15),
+                      TextFormField(
+                        controller: _descriptionController,
+                        decoration: InputDecoration(
+                          labelText: l10n.description,
+                          border: const OutlineInputBorder(),
+                        ),
+                        maxLines: 3,
+                        validator: (value) => value!.isEmpty ? l10n.enterDescription : null,
+                      ),
+                      const SizedBox(height: 15),
+                      ListTile(
+                        title: Text("${l10n.date}: ${DateFormat('yyyy-MM-dd').format(_selectedDate)}"),
+                        trailing: const Icon(Icons.calendar_today),
+                        onTap: () => _selectDate(context),
+                        tileColor: Colors.grey[200],
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      ),
+                    ],
                   ),
-                  onPressed: () => _saveNote(l10n),
-                  child: Text(l10n.save, style: const TextStyle(fontSize: 18)),
                 ),
               ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                ),
+                onPressed: () => _saveNote(l10n),
+                child: Text(l10n.save, style: const TextStyle(fontSize: 18)),
+              ),
+            ),
+            const SizedBox(height: 25), // Moves button above bottom bar
+          ],
         ),
       ),
     );

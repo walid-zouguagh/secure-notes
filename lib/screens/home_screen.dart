@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../main.dart';
 import '../l10n/app_localizations.dart';
 import 'package:secure_notes/screens/add_note_screen.dart';
 import 'package:secure_notes/screens/edit_note_screen.dart';
@@ -39,6 +40,14 @@ class _HomeScreenState extends State<HomeScreen> {
         foregroundColor: Colors.white,
         actions: [
           IconButton(
+            icon: const Icon(Icons.language),
+            onPressed: () {
+              final currentLocale = Localizations.localeOf(context);
+              final newLocale = currentLocale.languageCode == 'en' ? const Locale('ar') : const Locale('en');
+              MyApp.of(context)?.setLocale(newLocale);
+            },
+          ),
+          IconButton(
             icon: const Icon(Icons.delete_sweep),
             onPressed: () async {
               // Delete All functionality
@@ -58,8 +67,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   if (newIndex > oldIndex) newIndex -= 1;
                   final item = _notes.removeAt(oldIndex);
                   _notes.insert(newIndex, item);
-                  // Note: In a production app, you'd save this new order to the DB.
                 });
+                // Save the new order to the DB
+                DatabaseService.instance.updateAllNotes(_notes);
               },
               itemBuilder: (context, index) {
                 final note = _notes[index];
