@@ -14,7 +14,6 @@ class _AuthScreenState extends State<AuthScreen> {
   @override
   void initState() {
     super.initState();
-    // Start authentication as soon as the screen loads
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkBiometrics();
     });
@@ -31,7 +30,6 @@ class _AuthScreenState extends State<AuthScreen> {
         );
       }
     } else {
-      // If they fail or cancel, show a button so they can try again
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(AppLocalizations.of(context)!.authFailed)),

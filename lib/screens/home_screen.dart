@@ -16,7 +16,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   List<Note> _notes = [];
 
-  // This function refreshes the list from the database
   Future<void> _refreshNotes() async {
     final data = await DatabaseService.instance.getAllNotes();
     setState(() {
@@ -27,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _refreshNotes(); // Load notes when app starts
+    _refreshNotes();
   }
 
   @override
@@ -68,7 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   final item = _notes.removeAt(oldIndex);
                   _notes.insert(newIndex, item);
                 });
-                // Save the new order to the DB
+
                 DatabaseService.instance.updateAllNotes(_notes);
               },
               itemBuilder: (context, index) {
@@ -87,7 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     _refreshNotes();
                   },
                   child: Card(
-                    key: ValueKey(note.id), // Required for ReorderableListView
+                    key: ValueKey(note.id),
                     margin: const EdgeInsets.symmetric(vertical: 8),
                     child: ListTile(
                       title: Text(
@@ -108,7 +107,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           MaterialPageRoute(
                             builder: (context) => EditNoteScreen(
                               note: note,
-                            ), // Pass the selected note
+                            ),
                           ),
                         );
 
@@ -125,13 +124,11 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: Colors.deepPurple,
         child: const Icon(Icons.add, color: Colors.white),
         onPressed: () async {
-          // Navigate to AddNoteScreen and wait for a result
           bool? saved = await Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const AddNoteScreen()),
           );
 
-          // If a note was saved, refresh the list
           if (saved == true) {
             _refreshNotes();
           }

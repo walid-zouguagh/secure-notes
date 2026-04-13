@@ -21,8 +21,8 @@ class AuthService {
       return await _auth.authenticate(
         localizedReason: l10n.authReason,
         options: const AuthenticationOptions(
-          stickyAuth: true, // Keeps auth alive if app goes to background
-          biometricOnly: true, // Prevents bypass via PIN/Pattern if preferred
+          stickyAuth: true,
+          biometricOnly: true,
           //useErrorDialogs: true
         ),
       );

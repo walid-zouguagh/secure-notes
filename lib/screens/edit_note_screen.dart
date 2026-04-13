@@ -5,7 +5,7 @@ import '../models/note.dart';
 import '../services/database_service.dart';
 
 class EditNoteScreen extends StatefulWidget {
-  final Note note; // Receive the existing note
+  final Note note;
 
   const EditNoteScreen({super.key, required this.note});
 
@@ -22,7 +22,6 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
   @override
   void initState() {
     super.initState();
-    // Pre-fill the controllers with existing data
     _titleController = TextEditingController(text: widget.note.title);
     _descriptionController = TextEditingController(text: widget.note.description);
     _selectedDate = DateFormat('yyyy-MM-dd').parse(widget.note.date);
@@ -45,11 +44,11 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
   void _updateNote() async {
     if (_formKey.currentState!.validate()) {
       final updatedNote = Note(
-        id: widget.note.id, // Important: Keep the same ID so SQLite knows which one to update
+        id: widget.note.id, 
         title: _titleController.text,
         description: _descriptionController.text,
         date: DateFormat('yyyy-MM-dd').format(_selectedDate),
-        orderIndex: widget.note.orderIndex, // Preserve the existing order
+        orderIndex: widget.note.orderIndex, 
       );
 
       await DatabaseService.instance.updateNote(updatedNote);
@@ -109,7 +108,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
                 child: Text(l10n.updateChanges),
               ),
             ),
-            const SizedBox(height: 25), // Moves button above bottom bar
+            const SizedBox(height: 25),
           ],
         ),
       ),

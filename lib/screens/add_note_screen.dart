@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
-import 'package:intl/intl.dart'; // Add 'intl' to pubspec.yaml for date formatting
+import 'package:intl/intl.dart';
 import '../models/note.dart';
 import '../services/database_service.dart';
 
@@ -17,7 +17,6 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
   final _descriptionController = TextEditingController();
   DateTime _selectedDate = DateTime.now();
 
-  // Function to show the Date Picker (as seen in your screenshot)
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -38,11 +37,11 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
         title: _titleController.text,
         description: _descriptionController.text,
         date: DateFormat('yyyy-MM-dd').format(_selectedDate),
-        orderIndex: 0, // This will be correctly set by DatabaseService.addNote
+        orderIndex: 0,
       );
 
       await DatabaseService.instance.addNote(newNote);
-      if (mounted) Navigator.pop(context, true); // Return to home and signal success
+      if (mounted) Navigator.pop(context, true);
     }
   }
 
@@ -109,7 +108,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                 child: Text(l10n.save, style: const TextStyle(fontSize: 18)),
               ),
             ),
-            const SizedBox(height: 25), // Moves button above bottom bar
+            const SizedBox(height: 25),
           ],
         ),
       ),

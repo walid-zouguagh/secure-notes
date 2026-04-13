@@ -2,7 +2,7 @@ class Note {
   final int? id;
   final String title;
   final String description;
-  final String date; // To match your UI showing "2021-04-22"
+  final String date;
   final int orderIndex;
 
   Note({
@@ -13,7 +13,6 @@ class Note {
     required this.orderIndex,
   });
 
-  // Convert a Note into a Map. The keys must correspond to the column names in the database.
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -24,7 +23,6 @@ class Note {
     };
   }
 
-  // Convert a Map into a Note.
   factory Note.fromMap(Map<String, dynamic> map) {
     return Note(
       id: map['id'],
