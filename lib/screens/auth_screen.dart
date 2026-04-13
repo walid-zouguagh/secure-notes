@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
 import 'home_screen.dart';
 
@@ -14,11 +15,13 @@ class _AuthScreenState extends State<AuthScreen> {
   void initState() {
     super.initState();
     // Start authentication as soon as the screen loads
-    _checkBiometrics();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkBiometrics();
+    });
   }
 
   Future<void> _checkBiometrics() async {
-    bool isAuthenticated = await AuthService.authenticate();
+    bool isAuthenticated = await AuthService.authenticate(context);
 
     if (isAuthenticated) {
       if (mounted) {
@@ -31,7 +34,7 @@ class _AuthScreenState extends State<AuthScreen> {
       // If they fail or cancel, show a button so they can try again
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Authentication Failed')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.authFailed)),
         );
       }
     }
@@ -39,6 +42,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.deepPurple,
       body: Center(
@@ -47,14 +51,14 @@ class _AuthScreenState extends State<AuthScreen> {
           children: [
             const Icon(Icons.lock_outline, size: 80, color: Colors.white),
             const SizedBox(height: 20),
-            const Text(
-              "Secure Notes",
-              style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+            Text(
+              l10n.appTitle,
+              style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 40),
             ElevatedButton(
               onPressed: _checkBiometrics,
-              child: const Text("Unlock with Biometrics"),
+              child: Text(l10n.unlockWithBiometrics),
             ),
           ],
         ),

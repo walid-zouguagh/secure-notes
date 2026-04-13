@@ -1,5 +1,7 @@
 import 'package:local_auth/local_auth.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 
 class AuthService {
   static final LocalAuthentication _auth = LocalAuthentication();
@@ -10,12 +12,14 @@ class AuthService {
   }
 
   // The actual authentication logic
-  static Future<bool> authenticate() async {
+  static Future<bool> authenticate(BuildContext context) async {
     try {
       if (!await canAuthenticate()) return false;
 
+      final l10n = AppLocalizations.of(context)!;
+
       return await _auth.authenticate(
-        localizedReason: 'Please authenticate to view your notes',
+        localizedReason: l10n.authReason,
         options: const AuthenticationOptions(
           stickyAuth: true, // Keeps auth alive if app goes to background
           biometricOnly: true, // Prevents bypass via PIN/Pattern if preferred

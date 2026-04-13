@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import 'package:secure_notes/screens/add_note_screen.dart';
 import 'package:secure_notes/screens/edit_note_screen.dart';
 import '../models/note.dart';
@@ -30,9 +31,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text("SecureNotes"),
+        title: Text(l10n.appTitle),
         backgroundColor: Colors.deepPurple,
         foregroundColor: Colors.white,
         actions: [
@@ -47,7 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       body: _notes.isEmpty
-          ? const Center(child: Text("No notes yet. Tap + to add one!"))
+          ? Center(child: Text(l10n.noNotes))
           : ReorderableListView.builder(
               padding: const EdgeInsets.all(12),
               itemCount: _notes.length,

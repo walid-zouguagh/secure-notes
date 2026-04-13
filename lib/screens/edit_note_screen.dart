@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import '../models/note.dart';
 import '../services/database_service.dart';
@@ -57,9 +58,10 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Edit Note"),
+        title: Text(l10n.editNote),
         backgroundColor: Colors.deepPurple,
         foregroundColor: Colors.white,
       ),
@@ -71,19 +73,19 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
             children: [
               TextFormField(
                 controller: _titleController,
-                decoration: const InputDecoration(labelText: "Title", border: OutlineInputBorder()),
-                validator: (value) => value!.isEmpty ? "Please enter a title" : null,
+                decoration: InputDecoration(labelText: l10n.title, border: const OutlineInputBorder()),
+                validator: (value) => value!.isEmpty ? l10n.enterTitle : null,
               ),
               const SizedBox(height: 15),
               TextFormField(
                 controller: _descriptionController,
-                decoration: const InputDecoration(labelText: "Description", border: OutlineInputBorder()),
+                decoration: InputDecoration(labelText: l10n.description, border: const OutlineInputBorder()),
                 maxLines: 3,
-                validator: (value) => value!.isEmpty ? "Please enter a description" : null,
+                validator: (value) => value!.isEmpty ? l10n.enterDescription : null,
               ),
               const SizedBox(height: 15),
               ListTile(
-                title: Text("Date: ${DateFormat('yyyy-MM-dd').format(_selectedDate)}"),
+                title: Text("${l10n.date}: ${DateFormat('yyyy-MM-dd').format(_selectedDate)}"),
                 trailing: const Icon(Icons.calendar_today),
                 onTap: () => _selectDate(context),
                 tileColor: Colors.grey[200],
@@ -94,7 +96,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.blue, foregroundColor: Colors.white),
                   onPressed: _updateNote,
-                  child: const Text("UPDATE CHANGES"),
+                  child: Text(l10n.updateChanges),
                 ),
               ),
             ],
